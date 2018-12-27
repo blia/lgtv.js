@@ -28,6 +28,31 @@ function getHandshake() {
   }
 }
 
+const commands = {
+  switchInput: 'ssap://tv/switchInput',
+  getInputs: 'ssap://tv/getExternalInputList',
+  // ssap://tv/getCurrentChannel
+  // ssap://tv/getChannelProgramInfo
+  // ssap://tv/getChannelProgramInfo
+
+  launchApp: 'ssap://system.launcher/launch',
+  createToast: 'ssap://system.notifications/createToast',
+  // ssap://system.launcher/getAppState
+
+  setVolume: 'ssap://audio/setVolume',
+
+  getApps: 'ssap://com.webos.applicationManager/listLaunchPoints',
+  // ssap://com.webos.applicationManager/getForegroundAppInfo
+
+  // ssap://com.webos.service.appstatus/getAppStatus
+  
+  getServices: 'ssap://api/getServiceList',
+
+  // ssap://media.viewer/close
+
+  // ssap://webapp/closeWebApp
+};
+
 class Connection {
   constructor(connection) {
     this.connection = connection;
@@ -78,14 +103,14 @@ class Connection {
     });
   }
 
-  async sendRequest(uri, payload = null) {
+  async send(uri, payload = null) {
     if (!this.handshaken) {
       await this.handshake();
     }
-    return this.sendCommand({ uri, payload, type: 'request' });
+    return this.sendRequest({ uri, payload, type: 'request' });
   }
 
-  sendCommand(request) {
+  sendRequest(request) {
     let id = uuid();
     let { connection, stack } = this;
     let message = JSON.stringify({ id, ...request });
@@ -103,45 +128,39 @@ class Connection {
     });
   }
 
-  showFloat(message) {
-    return this.sendRequest('ssap://system.notifications/createToast', {
-      message
-    });
+  createToast(message) {
+    return this.send(commands.createToast, { message });
   }
 
   getInputs() {
-    return this.sendRequest('ssap://tv/getExternalInputList').then(
-      ({ payload }) => {
-        let { devices } = payload;
-        return devices;
-      }
-    );
+    return this.send(commands.getInputs).then(({ payload }) => {
+      let { devices } = payload;
+      return devices;
+    });
   }
 
   launchApp(id, params = null) {
-    return this.sendRequest('ssap://system.launcher/launch', { id, params });
+    return this.send(commands.launchApp, { id, params });
+  }
+
+  getServices() {
+    return this.send(commands.getServices);
+  }
+
+  getApps() {
+    return this.send(commands.getApps);
+  }
+
+  setInput(inputId) {
+    return this.send(commands.switchInput, { inputId });
+  }
+
+  setVolume(volume) {
+    return this.send(commands.setVolume, { volume });
   }
 
   launchYoutube(contentTarget) {
     return this.launchApp('youtube.leanback.v4', { contentTarget });
-  }
-
-  getServices() {
-    return this.sendRequest('ssap://api/getServiceList');
-  }
-
-  getApps() {
-    return this.sendRequest(
-      'ssap://com.webos.applicationManager/listLaunchPoints'
-    );
-  }
-
-  setInput(inputId) {
-    return this.sendRequest('ssap://tv/switchInput', {inputId})
-  }
-
-  setVolume(volume) {
-    return this.sendRequest('ssap://audio/setVolume', {volume})
   }
 }
 

@@ -23,17 +23,20 @@ USER-AGENT: iOS/5.0 UDAP/2.0 iPhone/4
 }
 
 function discover(timeout = 0) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     let server = createSocket("udp4");
     let timer = null;
     server.on("listening", () => {
-      sendSSDPDiscover(server);
-      if (timeout > 0) {
-        timer = setTimeout(() => {
-          server.close();
-          reject("Timout");
-        }, timeout);
+      let trySend = () => {
+        sendSSDPDiscover(server);
+        if (timeout > 0) {
+          timer = setTimeout(() => {
+            console.log('Timeout. Retrying.');
+            trySend();
+          }, timeout);
+        }
       }
+      trySend();
     });
 
     server.on("message", (message, remote) => {
