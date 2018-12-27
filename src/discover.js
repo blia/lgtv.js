@@ -6,7 +6,7 @@ function sendSSDPDiscover(server) {
 
   // these fields(with blank) are all required, tabs sensitive
   let message = `M-SEARCH * HTTP/1.1
-HOST: 239.255.255.250:1900
+HOST: ${host}:${port}
 MAN: "ssdp:discover"
 MX: 5
 ST: urn:dial-multiscreen-org:service:dial:1

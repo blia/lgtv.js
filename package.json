@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/msloth/lgtv.js",
   "dependencies": {
+    "uuid": "^3.3.2",
     "websocket": "^1.0.28"
   }
 }
