@@ -1,14 +1,14 @@
 {
-  "name": "lgtv",
-  "version": "0.2.4",
-  "description": "Simple lib to interact with and control an LG WebOS smart TV.",
+  "name": "@blia/lgtv",
+  "version": "0.1.0",
+  "description": "LG WebOS smart TV iteraction from node.js and CLI",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/msloth/lgtv.js.git"
+    "url": "git://github.com/blia/lgtv.js.git"
   },
   "keywords": [
     "tv",
@@ -17,12 +17,12 @@
     "remote",
     "control"
   ],
-  "author": "Marcus Linderoth <linderoth.marcus@gmail.com> (https://github.com/msloth)",
+  "author": "Kyrylo Yakovenko <923533@gmail.com> (https://github.com/blia)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/msloth/lgtv.js/issues"
+    "url": "https://github.com/blia/lgtv.js/issues"
   },
-  "homepage": "https://github.com/msloth/lgtv.js",
+  "homepage": "https://github.com/blia/lgtv.js",
   "dependencies": {
     "uuid": "^3.3.2",
     "websocket": "^1.0.28"
