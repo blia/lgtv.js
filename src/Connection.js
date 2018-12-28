@@ -6,19 +6,20 @@ const hello = require('./hello');
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
+const exists = util.promisify(fs.exists);
 
 const filename = path.join(__dirname, '..', 'client-key.txt');
 
-function getKey() {
+async function getKey() {
   return readFile(filename, 'utf8');
 }
 
-function setKey(key) {
+async function setKey(key) {
   return writeFile(filename, key);
 }
 
 async function getHandshake() {
-  if (fs.existsSync(filename)) {
+  if (await exists(filename)) {
     var key = await getKey();
     return JSON.stringify({
       ...hello,
@@ -48,10 +49,10 @@ class Connection {
       if (message.type !== 'utf8') {
         console.warn('<--- received: %s', message.toString());
       } else {
-        let {id, message} = JSON.parse(message.utf8Data);
+        let {id, ...data} = JSON.parse(message.utf8Data);
         // console.log('<--- received: %o', message);
         if (this.stack.has(id)) {
-          this.stack.get(id)(message);
+          this.stack.get(id)(data);
         }
       }
     });

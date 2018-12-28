@@ -1,8 +1,8 @@
 {
   "name": "@blia/lgtv",
   "version": "0.1.0",
-  "description": "LG WebOS smart TV iteraction from node.js and CLI",
-  "main": "index.js",
+  "description": "Control LG TV(WebOS) using from node.js and CLI",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

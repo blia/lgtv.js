@@ -7,11 +7,18 @@ module.exports = {
     };
   },
   getVolume(listener) {
-    return {
-      uri: 'ssap://audio/getVolume',
-      type: 'subscribe',
-      listener
-    };
+    if (typeof listener === 'function') {
+      return {
+        uri: 'ssap://audio/getVolume',
+        type: 'subscribe',
+        listener
+      };
+    } else {
+      return {
+        uri: 'ssap://audio/getVolume',
+        type: 'request'
+      };
+    }
   }
 };
 
