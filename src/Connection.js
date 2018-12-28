@@ -1,23 +1,25 @@
 const path = require('path');
 const fs = require('fs');
+const util = require('util');
 const uuid = require('uuid/v4');
 const hello = require('./hello');
+
+const readFile = util.promisify(fs.readFile);
+const writeFile = util.promisify(fs.writeFile);
 
 const filename = path.join(__dirname, '..', 'client-key.txt');
 
 function getKey() {
-  return fs.readFileSync(filename, 'utf8');
+  return readFile(filename, 'utf8');
 }
 
 function setKey(key) {
-  console.log('Storing client key:' + key);
-  fs.writeFileSync(filename, key);
+  return writeFile(filename, key);
 }
 
-function getHandshake() {
+async function getHandshake() {
   if (fs.existsSync(filename)) {
-    var key = getKey();
-    console.log('Client key:' + key);
+    var key = await getKey();
     return JSON.stringify({
       ...hello,
       payload: { ...hello.payload, 'client-key': key }
@@ -27,31 +29,6 @@ function getHandshake() {
     return JSON.stringify(hello);
   }
 }
-
-const commands = {
-  switchInput: 'ssap://tv/switchInput',
-  getInputs: 'ssap://tv/getExternalInputList',
-  // ssap://tv/getCurrentChannel
-  // ssap://tv/getChannelProgramInfo
-  // ssap://tv/getChannelProgramInfo
-
-  launchApp: 'ssap://system.launcher/launch',
-  createToast: 'ssap://system.notifications/createToast',
-  // ssap://system.launcher/getAppState
-
-  setVolume: 'ssap://audio/setVolume',
-
-  getApps: 'ssap://com.webos.applicationManager/listLaunchPoints',
-  // ssap://com.webos.applicationManager/getForegroundAppInfo
-
-  // ssap://com.webos.service.appstatus/getAppStatus
-  
-  getServices: 'ssap://api/getServiceList',
-
-  // ssap://media.viewer/close
-
-  // ssap://webapp/closeWebApp
-};
 
 class Connection {
   constructor(connection) {
@@ -71,9 +48,11 @@ class Connection {
       if (message.type !== 'utf8') {
         console.warn('<--- received: %s', message.toString());
       } else {
-        let json = JSON.parse(message.utf8Data);
-        console.log('<--- received: %o', json);
-        this.stack.get(json.id)(json);
+        let {id, message} = JSON.parse(message.utf8Data);
+        // console.log('<--- received: %o', message);
+        if (this.stack.has(id)) {
+          this.stack.get(id)(message);
+        }
       }
     });
   }
@@ -84,16 +63,17 @@ class Connection {
 
   async handshake() {
     let { connection, handshaken, stack } = this;
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
       if (handshaken) {
         resolve(this);
       } else {
-        let handshake = getHandshake();
+        let handshake = await getHandshake();
         console.log('Sending handshake.');
-        stack.set('register_0', message => {
+        stack.set('register_0', async message => {
           if (message.type === 'registered') {
             let { 'client-key': key } = message.payload;
-            setKey(key);
+            // @todo
+            await setKey(key);
             this.handshaken = true;
             resolve(this);
           }
@@ -103,22 +83,24 @@ class Connection {
     });
   }
 
-  async send(uri, payload = null) {
+  async send(params) {
     if (!this.handshaken) {
       await this.handshake();
     }
-    return this.sendRequest({ uri, payload, type: 'request' });
-  }
 
-  sendRequest(request) {
     let id = uuid();
+    let { listener, ...request } =
+      typeof params === 'function' ? params() : params;
     let { connection, stack } = this;
     let message = JSON.stringify({ id, ...request });
-    console.log('---> Sending command:' + message);
+    console.log('---> Sending command: ', { id, ...request });
     return new Promise((resolve, reject) => {
-      stack.set(id, message => {
-        resolve(message);
-      });
+      if (request.type === 'subscribe' && listener) {
+        stack.set(id, listener);
+        resolve(() => stack.delete(id));
+      } else {
+        stack.set(id, resolve);
+      }
       if (connection.connected) {
         connection.send(message);
       } else {
@@ -126,41 +108,6 @@ class Connection {
         reject('Not connected');
       }
     });
-  }
-
-  createToast(message) {
-    return this.send(commands.createToast, { message });
-  }
-
-  getInputs() {
-    return this.send(commands.getInputs).then(({ payload }) => {
-      let { devices } = payload;
-      return devices;
-    });
-  }
-
-  launchApp(id, params = null) {
-    return this.send(commands.launchApp, { id, params });
-  }
-
-  getServices() {
-    return this.send(commands.getServices);
-  }
-
-  getApps() {
-    return this.send(commands.getApps);
-  }
-
-  setInput(inputId) {
-    return this.send(commands.switchInput, { inputId });
-  }
-
-  setVolume(volume) {
-    return this.send(commands.setVolume, { volume });
-  }
-
-  launchYoutube(contentTarget) {
-    return this.launchApp('youtube.leanback.v4', { contentTarget });
   }
 }
 
