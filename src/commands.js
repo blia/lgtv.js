@@ -19,6 +19,12 @@ module.exports = {
         type: 'request'
       };
     }
+  },
+  getForegroundAppInfo () {
+    return {
+      uri: 'ssap://com.webos.applicationManager/getForegroundAppInfo',
+      type: 'request'
+    }
   }
 };
 
