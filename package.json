@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/blia/lgtv.js",
   "dependencies": {
+    "loudness": "^0.3.0",
     "uuid": "^3.3.2",
     "websocket": "^1.0.28"
   }
