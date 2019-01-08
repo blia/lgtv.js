@@ -2,8 +2,8 @@ const { discover } = require('./src/discover');
 const { connect } = require('./src/connect');
 const { getVolume, setVolume } = require('./src/commands');
 
-function listener(json) {
-  console.log('subscription: ', json.payload.volume);
+function listener({ payload }) {
+  console.log('subscription: ', payload.volume);
 }
 
 async function run() {
@@ -16,7 +16,6 @@ async function run() {
   await tv.send(setVolume(5));
   unsubscribe();
   await tv.send(setVolume(15));
-  
   tv.disconnect();
 }
 
