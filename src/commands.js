@@ -6,6 +6,13 @@ module.exports = {
       payload: { volume }
     };
   },
+  showFloat(message) {
+    return {
+      uri: 'ssap://system.notifications/createToast',
+      type: 'request',
+      payload: { message }
+    };
+  },
   getVolume(listener) {
     if (typeof listener === 'function') {
       return {
