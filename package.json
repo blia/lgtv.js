@@ -1,5 +1,5 @@
 {
-  "name": "@blia/lgtv",
+  "name": "@w4f/lgtv",
   "version": "0.1.0",
   "description": "Control LG TV(WebOS) using from node.js and CLI",
   "main": "src/index.js",
