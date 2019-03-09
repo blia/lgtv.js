@@ -7,7 +7,7 @@
 ## Discovering the TV
 
 ```js
-const { discover } = require('lgtv/discover');
+const { discover } = require('@w4f/lgtv/src/discover');
 discover(2000).then(tvInfo => {
   console.log(tvInfo);
 });
@@ -16,7 +16,7 @@ discover(2000).then(tvInfo => {
 ## Connecting to the TV
 
 ```js
-const { connect } = require('lgtv/connect');
+const { connect } = require('@w4f/lgtv/src/connect');
 connect(address).then(tv => {
   console.log(tv);
 });
@@ -25,9 +25,9 @@ connect(address).then(tv => {
 ## Sending a command
 
 ```js
-const { discover } = require('lgtv/discover');
-const { connect } = require('lgtv/connect');
-const { setVolume } = require('lgtv/commands');
+const { discover } = require('@w4f/lgtv/src/discover');
+const { connect } = require('@w4f/lgtv/src/connect');
+const { setVolume } = require('@w4f/lgtv/src/commands');
 
 async function run() {
   let { address } = await discover(2000);
@@ -43,9 +43,9 @@ run();
 ## Subscribing to events
 
 ```js
-const { discover } = require('lgtv/discover');
-const { connect } = require('lgtv/connect');
-const { getVolume } = require('lgtv/commands');
+const { discover } = require('@w4f/lgtv/src/discover');
+const { connect } = require('@w4f/lgtv/src/connect');
+const { getVolume } = require('@w4f/lgtv/src/commands');
 
 function listener({ payload }) {
   const { changed, action, muted, volume } = payload;
