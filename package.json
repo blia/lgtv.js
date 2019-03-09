@@ -1,8 +1,8 @@
 {
   "name": "@w4f/lgtv",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Control LG TV(WebOS) using from node.js and CLI",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
