@@ -2,7 +2,7 @@
 
 ## Installation
 
-`npm install @blia/lgtv` and set up the TV per below.
+`npm install @w4f/lgtv` and set up the TV per below.
 
 ## Discovering the TV
 
@@ -53,10 +53,10 @@ function listener({ payload }) {
     return;
   }
   if (changed.includes('muted')) {
-    console.log('Set muted', muted);
+    console.log('Muted', muted);
   }
   if (changed.includes('volume')) {
-    console.log('Set volume', volume);
+    console.log('Volume', volume);
   }
 }
 async function run() {
